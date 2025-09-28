@@ -1,17 +1,44 @@
 package my.code;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import my.code.utils.FilePasswordRepository;
+import my.code.utils.ZipPasswordCracker;
+
+import java.io.IOException;
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+        String zipFile = "secured.zip";
+        String passwordFile = "passwords.txt";
+        String outputFolder = "output_folder";
+
+        FilePasswordRepository dictionary = new FilePasswordRepository(passwordFile);
+        List<String> passwords;
+        try {
+            passwords = dictionary.getPasswords();
+        } catch (IOException e) {
+            System.err.println("Ошибка чтения словаря: " + e.getMessage());
+            return;
+        }
+
+        if (passwords.isEmpty()) {
+            System.out.println("Словарь паролей пуст.");
+            return;
+        }
+
+        ZipPasswordCracker cracker = new ZipPasswordCracker(zipFile, outputFolder);
+        String foundPassword = cracker.crackPassword(passwords);
+
+        if (foundPassword != null) {
+            System.out.println("Пароль найден: " + foundPassword);
+            try {
+                dictionary.savePassword(foundPassword);
+            } catch (IOException e) {
+                System.err.println("Ошибка записи правильного пароля: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Пароль не найден.");
         }
     }
 }
