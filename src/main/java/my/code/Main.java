@@ -6,8 +6,16 @@ import my.code.utils.ZipPasswordCracker;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Main {
+
+    private static final Logger logger = LogManager.getLogger(Main.class);
+
     public static void main(String[] args) {
+
+        logger.info("Запуск приложения");
 
         String zipFile = "secured.zip";
         String passwordFile = "passwords.txt";
@@ -40,5 +48,6 @@ public class Main {
         } else {
             System.out.println("Пароль не найден.");
         }
+        logger.info("Работа завершена");
     }
 }
